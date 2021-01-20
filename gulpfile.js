@@ -178,12 +178,12 @@ task("js", () => {
     return src(path.src.js)
       .pipe(plumber())
       .pipe(sourcemaps.init())
-      .pipe(rigger())
       .pipe(
         babel({
           presets: ["@babel/env"],
         })
       )
+      .pipe(rigger())
       .pipe(
         rename({
           suffix: ".min",
@@ -195,12 +195,12 @@ task("js", () => {
       .pipe(browserSync.stream());
   } else {
     return src(path.src.js)
-      .pipe(rigger())
       .pipe(
         babel({
           presets: ["@babel/env"],
         })
       )
+      .pipe(rigger())
       .pipe(dest(path.build.js))
       .pipe(uglify())
       .pipe(
