@@ -49,5 +49,6 @@ module.exports = {
       "properties-order": "alphabetical",
       "unspecified-properties-position": "bottom",
     }),
+    require('postcss-prettify')
   ],
 };

@@ -9,7 +9,8 @@ const { src, dest, task, series, watch, parallel } = require("gulp"),
   sourcemaps = require("gulp-sourcemaps"),
   plumber = require("gulp-plumber"),
   pug = require("gulp-pug"),
-  htmlmin = require("gulp-htmlmin"),
+  // htmlmin = require("gulp-htmlmin"),
+  formatHtml = require('gulp-format-html'),
   rename = require("gulp-rename"),
   babel = require("gulp-babel"),
   rigger = require("gulp-rigger"),
@@ -48,7 +49,7 @@ const path = {
   src: {
     html: "src/assets/pug/pages/*.pug",
     js: "src/assets/js/*.js",
-    jsHead: "./src/assets/js/inHead/*.js",
+    apart: "./src/assets/js/apart/*.js",
     css: "src/assets/scss/style.scss",
     fonts: "src/assets/fonts/*.*",
     images: "src/assets/img/**/*.{jpg,png,svg,gif,ico}",
@@ -82,7 +83,8 @@ task("html", () => {
       .pipe(plumber())
       .pipe(
         pug({
-          pretty: true,
+          // Отключил, чтобы самому форматировать html на выходе
+          pretty: false,
         })
       )
       .pipe(dest(path.build.html))
@@ -93,9 +95,15 @@ task("html", () => {
         .pipe(plumber())
         .pipe(
           pug({
-            pretty: true,
+            pretty: false,
           })
         )
+        .pipe(formatHtml(
+          {
+            "indent_size": 2,
+            "indent_with_tabs": true
+          }
+        ))
         // .pipe(htmlmin({ collapseWhitespace: true }))
         .pipe(dest(path.build.html))
     );
@@ -217,8 +225,8 @@ task("fonts", () => {
   return src(path.src.fonts).pipe(dest(path.build.fonts));
 });
 
-task("jsHead", () => {
-  return src(path.src.jsHead)
+task("apart", () => {
+  return src(path.src.apart)
     .pipe(plumber())
     .pipe(uglify())
     .pipe(dest(path.build.js))
@@ -237,11 +245,11 @@ task(
   "default",
   series(
     "clean",
-    parallel("styles", "fonts", "html", "images", "js", "jsHead"),
+    parallel("styles", "fonts", "html", "images", "js", "apart"),
     parallel("watch", "server")
   )
 );
 task(
   "build",
-  series("clean", parallel("styles", "fonts", "images", "html", "js", "jsHead"))
+  series("clean", parallel("styles", "fonts", "images", "html", "js", "apart"))
 );
